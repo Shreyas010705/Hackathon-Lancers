@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gramin Bazaar - Crop Price Calculator</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="bg-green-50 min-h-screen font-sans">
+  <!-- Header -->
+  <header class="bg-green-600 text-white py-4 shadow-md">
+    <div class="container mx-auto px-4 flex items-center justify-between">
+      <div class="flex items-center space-x-3">
+        <img src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?ixlib=rb-4.0.3&crop=faces&fit=crop&w=40&h=40" alt="Gramin Bazaar Logo" class="w-10 h-10 rounded-full">
+        <h1 class="text-2xl font-bold" data-i18n="header.title">Gramin Bazaar</h1>
+      </div>
+      <div class="flex items-center space-x-4">
+        <nav class="flex items-center space-x-4">
+          <a href="#calculator" class="hover:text-green-200 transition" data-i18n="nav.calculator">Calculator</a>
+          <a href="#about" class="hover:text-green-200 transition" data-i18n="nav.about">About</a>
+          <a href="login.html" class="hover:text-green-200 transition" data-i18n="nav.login">Login</a>
+        </nav>
+        <select id="languageSelect" class="bg-green-700 text-white border-none rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-green-200">
+          <option value="en">English</option>
+          <option value="kn">ಕನ್ನಡ</option>
+          <option value="hi">हिन्दी</option>
+        </select>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="container mx-auto px-4 py-8">
+    <!-- Description -->
+    <section id="about" class="mb-12 text-center bg-cover bg-center py-12 rounded-xl" style="background-image: url('https://images.unsplash.com/photo-1500595046743-ff25572808a3?ixlib=rb-4.0.3&crop=faces&fit=crop&w=1200&h=400')">
+      <div class="bg-white bg-opacity-80 p-6 rounded-lg max-w-3xl mx-auto">
+        <h2 class="text-3xl font-bold text-gray-800 mb-4" data-i18n="about.title">Welcome to Gramin Bazaar</h2>
+        <p class="text-gray-600 mb-4" data-i18n="about.desc1">
+          Gramin Bazaar is your trusted platform for accessing real-time crop price information across Karnataka. Designed with farmers in mind, our tool helps you calculate the value of your harvest based on the latest market rates, empowering you to make informed selling decisions.
+        </p>
+        <p class="text-gray-600" data-i18n="about.desc2">
+          Whether you're a small-scale farmer or a large producer, our user-friendly calculator and AI-powered chatbot provide personalized insights and agricultural tips to maximize your profits. Explore Gramin Bazaar today and stay ahead in the agricultural market!
+        </p>
+      </div>
+    </section>
+
+    <!-- Crop Price Calculator -->
+    <section id="calculator" class="bg-white rounded-2xl shadow-xl p-8 max-w-lg mx-auto relative">
+      <div class="absolute top-0 left-0 -mt-6 -ml-6">
+        <i class="fas fa-tractor text-4xl text-green-600 opacity-50"></i>
+      </div>
+      <h2 class="text-2xl font-bold text-center text-gray-800 mb-6" data-i18n="calculator.title">Crop Price Calculator</h2>
+
+      <div id="loading" class="hidden flex justify-center mb-4">
+        <svg class="animate-spin h-8 w-8 text-green-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24
+
+">
+          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+          <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8h8a8 8 0 01-16 0z"></path>
+        </svg>
+      </div>
+
+      <div class="mb-4">
+        <label for="districtSelect" class="block text-sm font-medium text-gray-700 mb-1" data-i18n="calculator.district">Select District</label>
+        <select id="districtSelect" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 bg-gray-50">
+          <option value="" data-i18n="calculator.districtPlaceholder">Loading districts...</option>
+        </select>
+      </div>
+
+      <div class="mb-4">
+        <label for="commoditySelect" class="block text-sm font-medium text-gray-700 mb-1" data-i18n="calculator.commodity">Select Commodity</label>
+        <select id="commoditySelect" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 bg-gray-50" disabled>
+          <option value="" data-i18n="calculator.commodityPlaceholder">Select a district first</option>
+        </select>
+      </div>
+
+      <div class="mb-4">
+        <label for="priceTypeSelect" class="block text-sm font-medium text-gray-700 mb-1" data-i18n="calculator.priceType">Price Type</label>
+        <select id="priceTypeSelect" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 bg-gray-50">
+          <option value="min" data-i18n="calculator.minPrice">Minimum Price (₹/Quintal)</option>
+          <option value="max" data-i18n="calculator.maxPrice">Maximum Price (₹/Quintal)</option>
+        </select>
+      </div>
+
+      <div class="mb-6">
+        <label for="loadInput" class="block text-sm font-medium text-gray-700 mb-1" data-i18n="calculator.load">Enter Load (in kg)</label>
+        <input type="number" id="loadInput" placeholder="e.g. 100" min="1" step="1" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 bg-gray-50">
+      </div>
+
+      <button id="calcBtn" class="w-full bg-green-600 text-white font-semibold py-3 rounded-lg hover:bg-green-700 transition duration-200" data-i18n="calculator.calculate">Calculate Price</button>
+
+      <div id="priceResult" class="mt-6 text-center text-lg font-semibold text-green-600"></div>
+      <div id="errorMessage" class="mt-4 text-center text-red-600"></div>
+    </section>
+  </main>
+
+  <!-- Floating Chatbot Button -->
+  <button id="openChatbot" class="fixed bottom-6 right-6 bg-green-600 text-white rounded-full w-14 h-14 flex items-center justify-center text-2xl shadow-lg hover:bg-green-700 transition z-50">
+    <i class="fas fa-robot"></i>
+  </button>
+
+  <!-- Chatbot Window -->
+  <div id="chatbotContainer" class="fixed bottom-24 right-6 w-80 max-h-[500px] bg-white rounded-xl shadow-2xl hidden flex-col z-40">
+    <div id="chatbotHeader" class="bg-green-600 text-white p-4 rounded-t-xl font-bold flex justify-between items-center">
+      <span data-i18n="chatbot.title">Gramin Assistant</span>
+      <button id="closeChatbot" class="text-white hover:text-gray-200">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+    <div id="chatbotMessages" class="flex-1 p-4 bg-gray-100 overflow-y-auto"></div>
+    <form id="chatbotForm" class="flex border-t border-gray-200">
+      <input type="text" id="userInput" class="flex-1 p-3 border-none outline-none bg-gray-50" data-i18n-placeholder="chatbot.placeholder" placeholder="Ask about crop prices...">
+      <button id="sendBtn" type="submit" class="bg-green-600 text-white p-3 hover:bg-green-700">
+        <i class="fas fa-paper-plane"></i>
+      </button>
+    </form>
+  </div>
+
+  <script>
+    // Translation Data
+    const translations = {
+      en: {
+        'header.title': 'Gramin Bazaar',
+        'nav.calculator': 'Calculator',
+        'nav.about': 'About',
+        'nav.login': 'Login',
+        'about.title': 'Welcome to Gramin Bazaar',
+        'about.desc1': 'Gramin Bazaar is your trusted platform for accessing real-time crop price information across Karnataka. Designed with farmers in mind, our tool helps you calculate the value of your harvest based on the latest market rates, empowering you to make informed selling decisions.',
+        'about.desc2': 'Whether you’re a small-scale farmer or a large producer, our user-friendly calculator and AI-powered chatbot provide personalized insights and agricultural tips to maximize your profits. Explore Gramin Bazaar today and stay ahead in the agricultural market!',
+        'calculator.title': 'Crop Price Calculator',
+        'calculator.district': 'Select District',
+        'calculator.districtPlaceholder': 'Loading districts...',
+        'calculator.commodity': 'Select Commodity',
+        'calculator.commodityPlaceholder': 'Select a district first',
+        'calculator.priceType': 'Price Type',
+        'calculator.minPrice': 'Minimum Price (₹/Quintal)',
+        'calculator.maxPrice': 'Maximum Price (₹/Quintal)',
+        'calculator.load': 'Enter Load (in kg)',
+        'calculator.calculate': 'Calculate Price',
+        'chatbot.title': 'Gramin Assistant',
+        'chatbot.placeholder': 'Ask about crop prices...',
+        'calculator.error': 'Failed to load districts. Please try again later.',
+        'calculator.errorDistrict': 'Please select a district.',
+        'calculator.errorCommodity': 'Please select a commodity.',
+        'calculator.errorLoad': 'Please enter a valid load (kg).',
+        'calculator.errorData': 'Price data not found for selected options.',
+        'calculator.result': 'Estimated Price',
+        'chatbot.pricePrompt': 'Please enter a crop name and date like: price wheat 2024-05-14',
+        'chatbot.priceSuccess': '✅',
+        'chatbot.priceError': '❌ No data for that crop/date.',
+        'chatbot.crops': '🌾 Available crops',
+        'chatbot.dates': '📅 Available dates',
+        'chatbot.default': '🤖 I can help with crop prices and tips. Try: price wheat 2024-05-14 or tips',
+        'chatbot.error': '⚠ Server error. Please try again.'
+      },
+      kn: {
+        'header.title': 'ಗ್ರಾಮೀಣ ಬಜಾರ್',
+        'nav.calculator': 'ಕ್ಯಾಲ್ಕುಲೇಟರ್',
+        'nav.about': 'ನಮ್ಮ ಬಗ್ಗೆ',
+        'nav.login': 'ಲಾಗಿನ್',
+        'about.title': 'ಗ್ರಾಮೀಣ ಬಜಾರ್‌ಗೆ ಸ್ವಾಗತ',
+        'about.desc1': 'ಗ್ರಾಮೀಣ ಬಜಾರ್ ಕರ್ನಾಟಕದಾದ್ಯಂತ ನೈಜ-ಸಮಯದ ಬೆಳೆ ಬೆಲೆ ಮಾಹಿತಿಯನ್ನು ಪಡೆಯಲು ನಿಮ್ಮ ವಿಶ್ವಾಸಾರ್ಹ ವೇದಿಕೆಯಾಗಿದೆ. ರೈತರಿಗಾಗಿ ವಿನ್ಯಾಸಗೊಳಿಸಲಾದ ನಮ್ಮ ಸಾಧನವು ಇತ್ತೀಚಿನ ಮಾರುಕಟ್ಟೆ ದರಗಳ ಆಧಾರದ ಮೇಲೆ ನಿಮ್ಮ ಕೊಯಿಲಿನ ಮೌಲ್ಯವನ್ನು ಲೆಕ್ಕಾಚಾರ ಮಾಡಲು ಸಹಾಯ ಮಾಡುತ್ತದೆ, ಇದು ನಿಮಗೆ ತಿಳಿವಳಿಕೆಯ ಮಾರಾಟ ನಿರ್ಧಾರಗಳನ್ನು ತೆಗೆದುಕೊಳ್ಳಲು ಸಬಲೀಕರಣ ನೀಡುತ್ತದೆ.',
+        'about.desc2': 'ನೀವು ಸಣ್ಣ-ಪ್ರಮಾಣದ ರೈತರಾಗಿರಲಿ ಅಥವಾ ದೊಡ್ಡ ಉತ್ಪಾದಕರಾಗಿರಲಿ, ನಮ್ಮ ಬಳಕೆದಾರ ಸ್ನೇಹಿ ಕ್ಯಾಲ್ಕುಲೇಟರ್ ಮತ್ತು AI-ಚಾಲಿತ ಚಾಟ್‌ಬಾಟ್ ವೈಯಕ್ತಿಕ ಒಳನೋಟಗಳನ್ನು ಮತ್ತು ಕೃಷಿ ಸಲಹೆಗಳನ್ನು ಒದಗಿಸುತ್ತವೆ ಆದಾಯವನ್ನು ಗರಿಷ್ಠಗೊಳಿಸಲು. ಇಂದು ಗ್ರಾಮೀಣ ಬಜಾರ್ ಅನ್ನು ಅನ್ವೇಷಿಸಿ ಮತ್ತು ಕೃಷಿ ಮಾರುಕಟ್ಟೆಯಲ್ಲಿ ಮುಂದುವರಿಯಿರಿ!',
+        'calculator.title': 'ಬೆಳೆ ಬೆಲೆ ಕ್ಯಾಲ್ಕುಲೇಟರ್',
+        'calculator.district': 'ಜಿಲ್ಲೆಯನ್ನು ಆಯ್ಕೆಮಾಡಿ',
+        'calculator.districtPlaceholder': 'ಜಿಲ್ಲೆಗಳನ್ನು ಲೋಡ್ ಮಾಡಲಾಗುತ್ತಿದೆ...',
+        'calculator.commodity': 'ಸರಕು ಆಯ್ಕೆಮಾಡಿ',
+        'calculator.commodityPlaceholder': 'ಮೊದಲು ಜಿಲ್ಲೆಯನ್ನು ಆಯ್ಕೆಮಾಡಿ',
+        'calculator.priceType': 'ಬೆಲೆ ಪ್ರಕಾರ',
+        'calculator.minPrice': 'ಕನಿಷ್ಠ ಬೆಲೆ (₹/ಕ್ವಿಂಟಾಲ್)',
+        'calculator.maxPrice': 'ಗರಿಷ್ಠ ಬೆಲೆ (₹/ಕ್ವಿಂಟಾಲ್)',
+        'calculator.load': 'ಲೋಡ್ ನಮೂದಿಸಿ (ಕೆಜಿಯಲ್ಲಿ)',
+        'calculator.calculate': 'ಬೆಲೆ ಲೆಕ್ಕಾಚಾರ ಮಾಡಿ',
+        'chatbot.title': 'ಗ್ರಾಮೀಣ ಸಹಾಯಕ',
+        'chatbot.placeholder': 'ಬೆಳೆ ಬೆಲೆಗಳ ಬಗ್ಗೆ ಕೇಳಿ...',
+        'calculator.error': 'ಜಿಲ್ಲೆಗಳನ್ನು ಲೋಡ್ ಮಾಡಲು ವಿಫಲವಾಗಿದೆ. ದಯವಿಟ್ಟು ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ.',
+        'calculator.errorDistrict': 'ದಯವಿಟ್ಟು ಜಿಲ್ಲೆಯನ್ನು ಆಯ್ಕೆಮಾಡಿ.',
+        'calculator.errorCommodity': 'ದಯವಿಟ್ಟು ಸರಕು ಆಯ್ಕೆಮಾಡಿ.',
+        'calculator.errorLoad': 'ದಯವಿಟ್ಟು ಮಾನ್ಯ ಲೋಡ್ (ಕೆಜಿ) ನಮೂದಿಸಿ.',
+        'calculator.errorData': 'ಆಯ್ಕೆಮಾಡಿದ ಆಯ್ಕೆಗಳಿಗೆ ಬೆಲೆ ಡೇಟಾ ಕಂಡುಬಂದಿಲ್ಲ.',
+        'calculator.result': 'ಅಂದಾಜು ಬೆಲೆ',
+        'chatbot.pricePrompt': 'ದಯವಿಟ್ಟು ಬೆಳೆ ಹೆಸರು ಮತ್ತು ದಿನಾಂಕವನ್ನು ಈ ರೀತಿ ನಮೂದಿಸಿ: price wheat 2024-05-14',
+        'chatbot.priceSuccess': '✅',
+        'chatbot.priceError': '❌ ಆ ಬೆಳೆ/ದಿನಾಂಕಕ್ಕೆ ಡೇಟಾ ಇಲ್ಲ.',
+        'chatbot.crops': '🌾 ಲಭ್ಯವಿರುವ ಬೆಳೆಗಳು',
+        'chatbot.dates': '📅 ಲಭ್ಯವಿರುವ ದಿನಾಂಕಗಳು',
+        'chatbot.default': '🤖 ನಾನು ಬೆಳೆ ಬೆಲೆಗಳು ಮತ್ತು ಸಲಹೆಗಳೊಂದಿಗೆ ಸಹಾಯ ಮಾಡಬಹುದು. ಪ್ರಯತ್ನಿಸಿ: price wheat 2024-05-14 ಅಥವಾ tips',
+        'chatbot.error': '⚠ ಸರ್ವರ್ ದೋಷ. ದಯವಿಟ್ಟು ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ.'
+      },
+      hi: {
+        'header.title': 'ग्रामीण बाजार',
+        'nav.calculator': 'कैलकुलेटर',
+        'nav.about': 'हमारे बारे में',
+        'nav.login': 'लॉगिन',
+        'about.title': 'ग्रामीण बाजार में आपका स्वागत है',
+        'about.desc1': 'ग्रामीण बाजार कर्नाटक में वास्तविक समय की फसल मूल्य जानकारी तक पहुँचने के लिए आपका विश्वसनीय मंच है। किसानों को ध्यान में रखकर डिज़ाइन किया गया, हमारा उपकरण नवीनतम बाजार दरों के आधार पर आपकी फसल के मूल्य की गणना करने में मदद करता है, जिससे आपको सूचित बिक्री निर्णय लेने में सशक्तिकरण मिलता है।',
+        'about.desc2': 'चाहे आप छोटे पैमाने के किसान हों या बड़े उत्पादक, हमारा उपयोगकर्ता-अनुकूल कैलकुलेटर और AI-संचालित चैटबॉट व्यक्तिगत अंतर्दृष्टि और कृषि सुझाव प्रदान करते हैं ताकि आपकी आय को अधिकतम किया जा सके। आज ही ग्रामीण बाजार का अन्वेषण करें और कृषि बाजार में आगे रहें!',
+        'calculator.title': 'फसल मूल्य कैलकुलेटर',
+        'calculator.district': 'जिला चुनें',
+        'calculator.districtPlaceholder': 'जिले लोड हो रहे हैं...',
+        'calculator.commodity': 'वस्तु चुनें',
+        'calculator.commodityPlaceholder': 'पहले जिला चुनें',
+        'calculator.priceType': 'मूल्य प्रकार',
+        'calculator.minPrice': 'न्यूनतम मूल्य (₹/क्विंटल)',
+        'calculator.maxPrice': 'अधिकतम मूल्य (₹/क्विंटल)',
+        'calculator.load': 'लोड दर्ज करें (किग्रा में)',
+        'calculator.calculate': 'मूल्य की गणना करें',
+        'chatbot.title': 'ग्रामीण सहायक',
+        'chatbot.placeholder': 'फसल मूल्यों के बारे में पूछें...',
+        'calculator.error': 'जिले लोड करने में विफल। कृपया फिर से प्रयास करें।',
+        'calculator.errorDistrict': 'कृपया एक जिला चुनें।',
+        'calculator.errorCommodity': 'कृपया एक वस्तु चुनें।',
+        'calculator.errorLoad': 'कृपया एक मान्य लोड (किग्रा) दर्ज करें।',
+        'calculator.errorData': 'चयनित विकल्पों के लिए मूल्य डेटा नहीं मिला।',
+        'calculator.result': 'अनुमानित मूल्य',
+        'chatbot.pricePrompt': 'कृपया फसल का नाम और तारीख इस तरह दर्ज करें: price wheat 2024-05-14',
+        'chatbot.priceSuccess': '✅',
+        'chatbot.priceError': '❌ उस फसल/तारीख के लिए कोई डेटा नहीं।',
+        'chatbot.crops': '🌾 उपलब्ध फसलें',
+        'chatbot.dates': '📅 उपलब्ध तारीखें',
+        'chatbot.default': '🤖 मैं फसल मूल्यों और सुझावों में मदद कर सकता हूँ। कोशिश करें: price wheat 2024-05-14 या tips',
+        'chatbot.error': '⚠ सर्वर त्रुटि। कृपया फिर से प्रयास करें।'
+      }
+    };
+
+    // Language Switching Logic
+    function updateLanguage(lang) {
+      document.querySelectorAll('[data-i18n]').forEach(element => {
+        const key = element.getAttribute('data-i18n');
+        element.textContent = translations[lang][key] || element.textContent;
+      });
+      document.querySelectorAll('[data-i18n-placeholder]').forEach(element => {
+        const key = element.getAttribute('data-i18n-placeholder');
+        element.placeholder = translations[lang][key] || element.placeholder;
+      });
+      document.documentElement.lang = lang;
+    }
+
+    const languageSelect = document.getElementById('languageSelect');
+    languageSelect.addEventListener('change', (e) => {
+      updateLanguage(e.target.value);
+      localStorage.setItem('preferredLanguage', e.target.value);
+    });
+
+    // Load preferred language or default to English
+    const savedLanguage = localStorage.getItem('preferredLanguage') || 'en';
+    languageSelect.value = savedLanguage;
+    updateLanguage(savedLanguage);
+
+    // Calculator Logic
+    const districtSelect = document.getElementById("districtSelect");
+    const commoditySelect = document.getElementById("commoditySelect");
+    const priceTypeSelect = document.getElementById("priceTypeSelect");
+    const loadInput = document.getElementById("loadInput");
+    const calcBtn = document.getElementById("calcBtn");
+    const priceResult = document.getElementById("priceResult");
+    const errorMessage = document.getElementById("errorMessage");
+    const loading = document.getElementById("loading");
+
+    let priceData = [];
+
+    async function loadPriceData() {
+      loading.classList.remove("hidden");
+      errorMessage.textContent = "";
+      try {
+        const res = await fetch("http://localhost:3000/api/prices");
+        if (!res.ok) throw new Error("Failed to fetch price data");
+        priceData = await res.json();
+
+        const districts = [...new Set(priceData.map(item => item.District))].sort();
+        districtSelect.innerHTML = `<option value="" data-i18n="calculator.districtPlaceholder">${translations[savedLanguage]['calculator.districtPlaceholder']}</option>`;
+        districts.forEach(d => {
+          const opt = document.createElement("option");
+          opt.value = d;
+          opt.textContent = d;
+          districtSelect.appendChild(opt);
+        });
+      } catch (err) {
+        console.error("Failed to load price data:", err);
+        errorMessage.textContent = translations[savedLanguage]['calculator.error'] || "Failed to load districts. Please try again later.";
+        districtSelect.innerHTML = `<option value="">${translations[savedLanguage]['calculator.districtPlaceholder']}</option>`;
+      } finally {
+        loading.classList.add("hidden");
+      }
+    }
+
+    districtSelect.addEventListener("change", () => {
+      const selectedDistrict = districtSelect.value;
+      commoditySelect.disabled = true;
+      commoditySelect.innerHTML = `<option value="" data-i18n="calculator.commodityPlaceholder">${translations[savedLanguage]['calculator.commodityPlaceholder']}</option>`;
+      priceResult.textContent = "";
+      errorMessage.textContent = "";
+
+      if (selectedDistrict) {
+        const filteredCommodities = priceData
+          .filter(item => item.District === selectedDistrict)
+          .map(item => item.Commodity);
+
+        const uniqueCommodities = [...new Set(filteredCommodities)].sort();
+        uniqueCommodities.forEach(c => {
+          const opt = document.createElement("option");
+          opt.value = c;
+          opt.textContent = c;
+          commoditySelect.appendChild(opt);
+        });
+        commoditySelect.disabled = false;
+      }
+    });
+
+    calcBtn.addEventListener("click", () => {
+      const district = districtSelect.value;
+      const commodity = commoditySelect.value;
+      const priceType = priceTypeSelect.value;
+      const load = parseFloat(loadInput.value);
+
+      priceResult.textContent = "";
+      errorMessage.textContent = "";
+
+      if (!district) {
+        errorMessage.textContent = translations[savedLanguage]['calculator.errorDistrict'] || "Please select a district.";
+        return;
+      }
+      if (!commodity) {
+        errorMessage.textContent = translations[savedLanguage]['calculator.errorCommodity'] || "Please select a commodity.";
+        return;
+      }
+      if (isNaN(load) || load <= 0) {
+        errorMessage.textContent = translations[savedLanguage]['calculator.errorLoad'] || "Please enter a valid load (kg).";
+        return;
+      }
+
+      const entry = priceData.find(item => item.District === district && item.Commodity === commodity);
+      if (!entry) {
+        errorMessage.textContent = translations[savedLanguage]['calculator.errorData'] || "Price data not found for selected options.";
+        return;
+      }
+
+      const unitPrice = (priceType === "min" ? entry.MinPrice : entry.MaxPrice) / 100;
+      const totalPrice = unitPrice * load;
+      priceResult.textContent = `${translations[savedLanguage]['calculator.result'] || 'Estimated Price'}: ₹${totalPrice.toFixed(2)} for ${load} kg`;
+    });
+
+    // Chatbot Logic
+    const chatbotContainer = document.getElementById('chatbotContainer');
+    const chatbotForm = document.getElementById('chatbotForm');
+    const userInput = document.getElementById('userInput');
+    const chatbotMessages = document.getElementById('chatbotMessages');
+    const openChatbot = document.getElementById('openChatbot');
+    const closeChatbot = document.getElementById('closeChatbot');
+
+    function appendMessage(sender, text) {
+      const msg = document.createElement('div');
+      msg.classList.add('message', sender, 'p-3', 'rounded-xl', 'mb-2', 'text-sm');
+      msg.classList.add(sender === 'user' ? 'bg-blue-100 ml-auto' : 'bg-green-100 mr-auto');
+      msg.textContent = text;
+      chatbotMessages.appendChild(msg);
+      chatbotMessages.scrollTop = chatbotMessages.scrollHeight;
+    }
+
+    openChatbot.addEventListener('click', () => {
+      chatbotContainer.classList.toggle('hidden');
+    });
+
+    closeChatbot.addEventListener('click', () => {
+      chatbotContainer.classList.add('hidden');
+    });
+
+    chatbotForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const userMessage = userInput.value.trim();
+      if (!userMessage) return;
+
+      appendMessage('user', userMessage);
+      userInput.value = '';
+
+      const lowerMessage = userMessage.toLowerCase();
+
+      try {
+        if (lowerMessage.includes('tip')) {
+          const res = await fetch('http://localhost:3000/api/tips');
+          const data = await res.json();
+          data.tips.forEach(tip => appendMessage('bot', tip));
+        } else if (lowerMessage.includes('price') || lowerMessage.includes('rate')) {
+          appendMessage('bot', translations[savedLanguage]['chatbot.pricePrompt'] || 'Please enter a crop name and date like: price wheat 2024-05-14');
+        } else if (lowerMessage.startsWith('price ')) {
+          const parts = lowerMessage.split(' ');
+          const crop = parts[1];
+          const date = parts[2];
+
+          const res = await fetch(`http://localhost:3000/api/get-price?date=${date}&crop=${crop}`);
+          const data = await res.json();
+
+          if (data.price_per_kg) {
+            appendMessage('bot', `${translations[savedLanguage]['chatbot.priceSuccess'] || '✅'} ${crop} on ${date} was ₹${data.price_per_kg}/kg.`);
+          } else {
+            appendMessage('bot', translations[savedLanguage]['chatbot.priceError'] || '❌ No data for that crop/date.');
+          }
+        } else if (lowerMessage.includes('crops')) {
+          const res = await fetch('http://localhost:3000/api/crops');
+          const data = await res.json();
+          appendMessage('bot', `${translations[savedLanguage]['chatbot.crops'] || '🌾 Available crops'}: ${data.crops.join(', ')}`);
+        } else if (lowerMessage.includes('date')) {
+          const res = await fetch('http://localhost:3000/api/dates');
+          const data = await res.json();
+          appendMessage('bot', `${translations[savedLanguage]['chatbot.dates'] || '📅 Available dates'}: ${data.dates.join(', ')}`);
+        } else {
+          appendMessage('bot', translations[savedLanguage]['chatbot.default'] || "🤖 I can help with crop prices and tips. Try: price wheat 2024-05-14 or tips");
+        }
+      } catch (error) {
+        appendMessage('bot', translations[savedLanguage]['chatbot.error'] || '⚠ Server error. Please try again.');
+      }
+    });
+
+    loadPriceData();
+  </script>
+</body>
+</html>

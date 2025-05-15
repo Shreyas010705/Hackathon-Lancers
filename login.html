@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Login - GraminBazaar</title>
+<style>
+  body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, #2e7d32, #388e3c);
+    color: #e8f5e9;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+  }
+  .container {
+    background: #1b5e20;
+    padding: 2rem 3rem;
+    border-radius: 12px;
+    width: 320px;
+    box-shadow: 0 0 10px #1b5e20aa;
+  }
+  h2 {
+    text-align: center;
+    margin-bottom: 1.5rem;
+  }
+  label {
+    display: block;
+    margin-top: 1rem;
+  }
+  input[type="text"],
+  input[type="password"] {
+    width: 100%;
+    padding: 0.5rem;
+    margin-top: 0.3rem;
+    border-radius: 6px;
+    border: none;
+    outline: none;
+  }
+  button {
+    width: 100%;
+    padding: 0.7rem;
+    margin-top: 1.5rem;
+    border-radius: 6px;
+    border: none;
+    background-color: #4caf50;
+    color: white;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  button:hover {
+    background-color: #388e3c;
+  }
+  #langSelector {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: #2e7d32;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    padding: 5px 10px;
+    cursor: pointer;
+  }
+  .signup-link {
+    margin-top: 1rem;
+    text-align: center;
+    font-size: 0.9rem;
+  }
+  .signup-link a {
+    color: #a5d6a7;
+    text-decoration: none;
+    font-weight: 600;
+  }
+  .signup-link a:hover {
+    text-decoration: underline;
+  }
+</style>
+</head>
+<body>
+  <select id="langSelector" title="Select Language">
+    <option value="en">English</option>
+    <option value="hi">हिन्दी</option>
+    <option value="kn">ಕನ್ನಡ</option>
+  </select>
+
+  <div class="container">
+    <h2 id="loginTitle">Login</h2>
+    <label for="username" id="usernameLabel">Username:</label>
+    <input type="text" id="username" placeholder="Enter username" required />
+
+    <label for="password" id="passwordLabel">Password:</label>
+    <input type="password" id="password" placeholder="Enter password" required />
+
+    <button id="loginBtn">Login</button>
+
+    <div class="signup-link" id="signupText">
+      Don't have an account? <a href="signup.html" id="signupLink">Sign up here</a>
+    </div>
+  </div>
+
+<script>
+  const translations = {
+    en: {
+      loginTitle: "Login",
+      usernameLabel: "Username:",
+      passwordLabel: "Password:",
+      loginBtn: "Login",
+      signupText: "Don't have an account? ",
+      signupLink: "Sign up here",
+      alertEmpty: "Please fill all fields.",
+      alertInvalid: "Invalid username or password."
+    },
+    hi: {
+      loginTitle: "लॉगिन करें",
+      usernameLabel: "उपयोगकर्ता नाम:",
+      passwordLabel: "पासवर्ड:",
+      loginBtn: "लॉगिन",
+      signupText: "खाता नहीं है? ",
+      signupLink: "यहाँ साइन अप करें",
+      alertEmpty: "कृपया सभी फील्ड भरें।",
+      alertInvalid: "अमान्य उपयोगकर्ता नाम या पासवर्ड।"
+    },
+    kn: {
+      loginTitle: "ಲಾಗಿನ್",
+      usernameLabel: "ಬಳಕೆದಾರ ಹೆಸರು:",
+      passwordLabel: "ಪಾಸ್ವರ್ಡ್:",
+      loginBtn: "ಲಾಗಿನ್",
+      signupText: "ಖಾತೆ ಇಲ್ಲವೇ? ",
+      signupLink: "ಇಲ್ಲಿ ಸೈನ್ ಅಪ್ ಮಾಡಿ",
+      alertEmpty: "ದಯವಿಟ್ಟು ಎಲ್ಲಾ ಕ್ಷೇತ್ರಗಳನ್ನು ಭರ್ತಿ ಮಾಡಿ.",
+      alertInvalid: "ತಪ್ಪು ಬಳಕೆದಾರ ಹೆಸರು ಅಥವಾ ಪಾಸ್ವರ್ಡ್."
+    }
+  };
+
+  const langSelector = document.getElementById('langSelector');
+
+  function updateLanguageUI(lang) {
+    if (!translations[lang]) lang = 'en';
+    document.getElementById('loginTitle').textContent = translations[lang].loginTitle;
+    document.getElementById('usernameLabel').textContent = translations[lang].usernameLabel;
+    document.getElementById('passwordLabel').textContent = translations[lang].passwordLabel;
+    document.getElementById('loginBtn').textContent = translations[lang].loginBtn;
+    document.getElementById('signupText').firstChild.textContent = translations[lang].signupText;
+    document.getElementById('signupLink').textContent = translations[lang].signupLink;
+  }
+
+  langSelector.addEventListener('change', (e) => {
+    const selectedLang = e.target.value;
+    localStorage.setItem('graminbazaar_lang', selectedLang);
+    updateLanguageUI(selectedLang);
+  });
+
+  window.addEventListener('DOMContentLoaded', () => {
+    const savedLang = localStorage.getItem('graminbazaar_lang') || 'en';
+    langSelector.value = savedLang;
+    updateLanguageUI(savedLang);
+  });
+
+  const loginBtn = document.getElementById('loginBtn');
+  loginBtn.addEventListener('click', () => {
+    const username = document.getElementById('username').value.trim();
+    const password = document.getElementById('password').value.trim();
+    const lang = langSelector.value;
+
+    if (!username || !password) {
+      alert(translations[lang].alertEmpty);
+      return;
+    }
+    let users = JSON.parse(localStorage.getItem('graminbazaar_users') || '{}');
+    if (users[username] && users[username].password === password) {
+      // Save logged-in user in localStorage
+      localStorage.setItem('graminbazaar_logged_in_user', username);
+      window.location.href = 'index.html';
+    } else {
+      alert(translations[lang].alertInvalid);
+    }
+  });
+</script>
+</body>
+</html>
